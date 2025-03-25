@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: 270792
       POSTGRES_DB: weather_db
     ports:
-      - "5433:5432"  
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -33,6 +33,21 @@ services:
     ports:
       - "8000:8000"
     command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+  frontend:
+    build:
+      context: ../frontend 
+      dockerfile: Dockerfile
+    container_name: react-weather-frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    environment:
+      - REACT_APP_API_URL=http://backend:8000
+      - REACT_APP_IPGEO_API_KEY=7b8fea2ba4ba45fe8563a73eb5c120fd
+    env_file:
+      - ../frontend/.env
 
 volumes:
   postgres_data:
